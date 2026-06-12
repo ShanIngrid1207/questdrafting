@@ -164,7 +164,25 @@ section{padding:clamp(72px,9vw,124px) 0}
 .g-wide{grid-column:span 7;aspect-ratio:16/10}
 .g-tall{grid-column:span 5;aspect-ratio:4/5}
 .g-half{grid-column:span 6;aspect-ratio:3/2}
-@media(max-width:760px){.gal{grid-template-columns:1fr;gap:14px}.g-wide,.g-tall,.g-half{grid-column:auto;aspect-ratio:16/11}}
+.gal-progress{display:none;height:2px;background:var(--line);margin-top:20px;position:relative;overflow:hidden;border-radius:99px}
+.gal-progress i{position:absolute;left:0;top:0;bottom:0;width:100%;background:var(--terra);transform:scaleX(.25);transform-origin:left;transition:transform .15s linear}
+.gal-hint{display:none;font-family:var(--ital);font-style:italic;font-size:15px;color:var(--mute);margin-top:10px;text-align:center}
+@media(max-width:760px){
+  .gal{display:flex;overflow-x:auto;gap:14px;scroll-snap-type:x mandatory;margin-inline:-22px;padding-inline:22px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .gal::-webkit-scrollbar{display:none}
+  .g-wide,.g-tall,.g-half{flex:0 0 80vw;aspect-ratio:4/3.2;scroll-snap-align:center}
+  .gal-progress,.gal-hint{display:block}
+}
+
+/* floating quote pill — mobile only */
+.float-cta{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom));z-index:60;display:none;align-items:center;gap:.6em;background:var(--terra);color:#fff;font-weight:600;font-size:15px;padding:16px 30px;border-radius:99px;box-shadow:0 14px 36px rgba(138,67,23,.4);transform:translate(-50%,150%);transition:transform .55s var(--easeout)}
+.float-cta svg{width:1em;height:1em}
+.float-cta.show{transform:translate(-50%,0)}
+@media(max-width:760px){.float-cta{display:inline-flex}}
+@media(prefers-reduced-motion:reduce){.float-cta{transition:none}}
+
+/* hero word cascade */
+.hero h1 .w{display:inline-block}
 
 /* ---------- process — light numbered grid ---------- */
 .proc-sec{background:var(--paper-2)}
@@ -254,7 +272,7 @@ footer{background:var(--paper);padding:72px 0 34px;border-top:1px solid var(--li
 <section class="hero">
   <div class="wrap">
     <div class="hero-top">
-      <h1 class="rv">Plans worthy of the home <em>you'll build</em></h1>
+      <h1 id="heroH1">Plans worthy of the home <em>you'll build</em></h1>
       <div class="hero-side rv">
         <span class="label">A residential drafting studio in Greater Phoenix</span>
         <p>Architectural design, photoreal 3D, complete construction documents, and city permitting — one studio, one standard, one quote.</p>
@@ -366,6 +384,8 @@ footer{background:var(--paper);padding:72px 0 34px;border-top:1px solid var(--li
       <div class="g g-half rv"><img src="assets/model-massing-white.jpg" alt="White three-dimensional massing model of a multi-level estate"><div class="cap">Hillside Estate · Design Model</div></div>
       <div class="g g-half rv"><img src="assets/sheet-site-plan.jpg" alt="Site plan sheet A100 showing property lines, setbacks, and the vicinity map"><div class="cap">Sheet A100 · Site Plan</div></div>
     </div>
+    <div class="gal-progress" aria-hidden="true"><i id="galBar"></i></div>
+    <p class="gal-hint" aria-hidden="true">swipe to browse</p>
   </div>
 </section>
 
@@ -458,6 +478,9 @@ footer{background:var(--paper);padding:72px 0 34px;border-top:1px solid var(--li
   </div>
 </footer>
 
+<a class="float-cta" id="floatCta" href="#contact" aria-label="Get a quote">Get a Quote <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
+
+<script src="vendor/anime.umd.min.js"></script>
 <script>
 (function(){
   var hdr=document.getElementById('hdr');
@@ -481,6 +504,58 @@ footer{background:var(--paper);padding:72px 0 34px;border-top:1px solid var(--li
       a.style.maxHeight=open?a.firstElementChild.scrollHeight+24+'px':'0px';
     });
   });
+
+  var rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  // hero word cascade (anime.js)
+  var h1=document.getElementById('heroH1');
+  if(h1&&window.anime&&anime.animate&&!rm){
+    (function split(el){
+      Array.prototype.slice.call(el.childNodes).forEach(function(n){
+        if(n.nodeType===3){
+          var frag=document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach(function(w){
+            if(!w)return;
+            if(/^\s+$/.test(w)){frag.appendChild(document.createTextNode(w));return;}
+            var s=document.createElement('span');s.className='w';s.textContent=w;frag.appendChild(s);
+          });
+          el.replaceChild(frag,n);
+        }else if(n.nodeType===1){split(n);}
+      });
+    })(h1);
+    anime.animate(h1.querySelectorAll('.w'),{
+      opacity:[0,1],
+      translateY:['0.55em','0em'],
+      duration:850,
+      delay:anime.stagger(65,{start:120}),
+      ease:'outExpo'
+    });
+  }
+
+  // floating quote pill: show after hero image, hide at contact
+  var pill=document.getElementById('floatCta');
+  var heroFig=document.querySelector('.hero-fig');
+  var contact=document.getElementById('contact');
+  if(pill&&heroFig&&contact){
+    var update=function(){
+      var past=heroFig.getBoundingClientRect().bottom<0;
+      var atCta=contact.getBoundingClientRect().top<window.innerHeight*.85;
+      pill.classList.toggle('show',past&&!atCta);
+    };
+    window.addEventListener('scroll',update,{passive:true});
+    update();
+  }
+
+  // gallery swipe progress
+  var gal=document.querySelector('.gal');
+  var bar=document.getElementById('galBar');
+  if(gal&&bar){
+    gal.addEventListener('scroll',function(){
+      var max=gal.scrollWidth-gal.clientWidth;
+      if(max<=0)return;
+      bar.style.transform='scaleX('+(0.25+0.75*(gal.scrollLeft/max))+')';
+    },{passive:true});
+  }
 })();
 </script>
 </body>

@@ -91,10 +91,15 @@ header.stuck{border-color:var(--line)}
 .menu-open .menu-btn span:nth-child(2){opacity:0}
 .menu-open .menu-btn span:nth-child(3){top:23px;transform:rotate(-45deg)}
 @media(max-width:940px){.nav-links{display:none}.menu-btn{display:block}}
-.m-menu{display:none;border-top:1px solid var(--line);background:var(--espresso-2);padding:8px 22px 24px}
-.menu-open .m-menu{display:block}
-.m-menu a{display:block;padding:15px 0;font-size:18px;font-family:var(--serif);border-bottom:1px solid var(--line);color:var(--bone)}
-.m-menu .btn{margin-top:18px;width:100%;justify-content:center;border-bottom:0}
+/* full-screen overlay menu */
+.overlay{position:fixed;inset:0;z-index:49;background:#0F0B07;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(26px,7vw,80px);opacity:0;visibility:hidden;transition:opacity .5s var(--ease),visibility .5s}
+body.menu-open .overlay{opacity:1;visibility:visible}
+body.menu-open{overflow:hidden}
+.overlay nav a{display:flex;align-items:baseline;justify-content:space-between;gap:16px;font-family:var(--serif);font-size:clamp(28px,7.5vw,44px);color:var(--bone);padding:18px 0;border-bottom:1px solid var(--line);transition:color .3s,padding-left .35s var(--ease)}
+.overlay nav a:hover{color:var(--copper-soft);padding-left:10px}
+.overlay nav a small{font-family:var(--ital);font-style:italic;font-size:16px;color:var(--copper-soft);flex:0 0 auto}
+.overlay .om-foot{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--mute)}
+@media(prefers-reduced-motion:reduce){.overlay{transition:none}}
 
 /* hero */
 .hero{position:relative;isolation:isolate;overflow:hidden;min-height:88vh;display:flex;flex-direction:column;justify-content:flex-end}
@@ -102,6 +107,8 @@ header.stuck{border-color:var(--line)}
 .hero::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(23,19,13,.62) 0%,rgba(23,19,13,.36) 38%,rgba(23,19,13,.88) 100%)}
 .hero-in{padding:56px 0 0;max-width:780px}
 .hero h1{font-size:clamp(42px,6.4vw,80px);margin:22px 0 24px;line-height:1.05}
+.hero h1 .mask{display:block;overflow:hidden}
+.hero h1 .mask>span{display:block}
 .hero h1 em{color:var(--copper-soft)}
 .hero p{font-size:clamp(17px,1.5vw,19.5px);color:#E6DDCD;max-width:54ch;font-weight:300;margin-bottom:32px}
 .hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
@@ -249,14 +256,18 @@ footer{background:#100C07;color:var(--bone);padding:78px 0 34px;border-top:1px s
     </nav>
     <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
-  <div class="m-menu" id="mMenu">
-    <a href="#studio">Studio</a>
-    <a href="#how">How It Works</a>
-    <a href="#work">Portfolio</a>
-    <a href="#who">Who It's For</a>
-    <a href="#contact" class="btn btn-copper">Get a Quote</a>
-  </div>
 </header>
+
+<div class="overlay" id="overlay" aria-hidden="true">
+  <nav aria-label="Menu">
+    <a href="#studio"><span>Studio</span><small>the practice</small></a>
+    <a href="#how"><span>How It Works</span><small>six steps</small></a>
+    <a href="#work"><span>Portfolio</span><small>selected work</small></a>
+    <a href="#who"><span>Who It's For</span><small>clientele</small></a>
+    <a href="#contact"><span>Get a Quote</span><small>begin</small></a>
+  </nav>
+  <p class="om-foot">(602) 339-6455 · Gilbert, Arizona</p>
+</div>
 
 <main id="top">
 
@@ -265,7 +276,7 @@ footer{background:#100C07;color:var(--bone);padding:78px 0 34px;border-top:1px s
   <img class="bg" src="assets/render-pool-twilight.jpg" alt="Twilight render of a modern Arizona estate with warmly lit interiors above a pool terrace">
   <div class="wrap hero-in">
     <span class="kicker">Residential Drafting Studio · Greater Phoenix</span>
-    <h1>The home you imagine, <em>documented</em> to be built</h1>
+    <h1><span class="mask"><span>The home you imagine,</span></span><span class="mask"><span><em>documented</em> to be built</span></span></h1>
     <p>Quest prepares complete architectural documentation for custom residences across the Valley — from the first sketch and photoreal 3D to the approved permit set. One studio, one standard, one quote.</p>
     <div class="hero-ctas">
       <a class="btn btn-copper" href="#contact">Begin a Project <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg></a>
@@ -459,15 +470,33 @@ footer{background:#100C07;color:var(--bone);padding:78px 0 34px;border-top:1px s
   </div>
 </footer>
 
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script src="vendor/Observer.min.js"></script>
 <script>
 (function(){
   var hdr=document.getElementById('hdr');
   var onScroll=function(){hdr.classList.toggle('stuck',window.scrollY>12);};
   onScroll();window.addEventListener('scroll',onScroll,{passive:true});
 
+  var hasGsap=!!window.gsap;
+  var noRM=!matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  // overlay menu
   var mb=document.getElementById('menuBtn');
-  mb.addEventListener('click',function(){var open=document.body.classList.toggle('menu-open');mb.setAttribute('aria-expanded',open);});
-  document.querySelectorAll('#mMenu a').forEach(function(a){a.addEventListener('click',function(){document.body.classList.remove('menu-open');mb.setAttribute('aria-expanded','false');});});
+  var overlay=document.getElementById('overlay');
+  function setMenu(open){
+    document.body.classList.toggle('menu-open',open);
+    mb.setAttribute('aria-expanded',open);
+    overlay.setAttribute('aria-hidden',!open);
+    if(open&&hasGsap&&noRM){
+      gsap.fromTo('#overlay nav a',{y:34,opacity:0},{y:0,opacity:1,stagger:.07,duration:.7,ease:'power3.out',delay:.12});
+      gsap.fromTo('#overlay .om-foot',{opacity:0},{opacity:1,duration:.6,delay:.5});
+    }
+  }
+  mb.addEventListener('click',function(){setMenu(!document.body.classList.contains('menu-open'));});
+  document.querySelectorAll('#overlay a').forEach(function(a){a.addEventListener('click',function(){setMenu(false);});});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&document.body.classList.contains('menu-open'))setMenu(false);});
 
   if('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion:reduce)').matches){
     var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.14,rootMargin:'0px 0px -8% 0px'});
@@ -502,6 +531,41 @@ footer{background:#100C07;color:var(--bone);padding:78px 0 34px;border-top:1px s
       a.style.maxHeight=open?a.firstElementChild.scrollHeight+24+'px':'0px';
     });
   });
+
+  // GSAP cinematics
+  if(hasGsap&&window.ScrollTrigger){
+    gsap.registerPlugin(ScrollTrigger);
+    if(window.Observer)gsap.registerPlugin(Observer);
+    gsap.matchMedia().add('(prefers-reduced-motion: no-preference)',function(){
+      // hero: slow settle zoom + masked line reveal + content rise
+      gsap.from('.hero .bg',{scale:1.14,duration:2.6,ease:'power2.out'});
+      gsap.from('.hero h1 .mask>span',{yPercent:112,duration:1.15,stagger:.14,ease:'power4.out',delay:.15});
+      gsap.from(['.hero-in .kicker','.hero-in p','.hero-in .hero-ctas'],{y:26,opacity:0,duration:.9,stagger:.12,ease:'power3.out',delay:.55});
+      gsap.from('.hpt',{y:28,opacity:0,duration:.8,stagger:.1,ease:'power3.out',delay:.9});
+      // scroll parallax: hero drifts up as you leave it
+      gsap.to('.hero .bg',{yPercent:14,ease:'none',
+        scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+      // gallery + featured images breathe on scroll
+      gsap.utils.toArray('.g img,.feat-fig img').forEach(function(img){
+        gsap.fromTo(img,{yPercent:-5,scale:1.12},{yPercent:5,ease:'none',
+          scrollTrigger:{trigger:img.parentElement,start:'top bottom',end:'bottom top',scrub:true}});
+      });
+      // swipe between clientele tabs on touch
+      if(window.Observer){
+        var whoSec=document.getElementById('who');
+        Observer.create({
+          target:whoSec,type:'touch',lockAxis:true,tolerance:60,dragMinimum:40,
+          onLeft:function(){stepWho(1);},onRight:function(){stepWho(-1);}
+        });
+      }
+    });
+  }
+  function stepWho(d){
+    var idx=wts.findIndex?wts.findIndex(function(t){return t.classList.contains('on');}):0;
+    if(idx<0)idx=0;
+    var n=(idx+d+wts.length)%wts.length;
+    wts[n].click();
+  }
 })();
 </script>
 </body>
