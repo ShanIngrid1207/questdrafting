@@ -147,9 +147,13 @@ header{position:sticky;top:0;z-index:90;background:var(--paper);border-bottom:1p
 .rc .trade{display:block;margin-top:18px;font-size:13.5px;font-style:italic;color:var(--ink-soft)}
 .rc .trade b{font-style:normal;font-weight:600;color:var(--turq-deep)}
 
-/* ---------- plate spread ---------- */
-.plate{padding:clamp(20px,3vw,40px) 0}
-.plate .fig img{height:clamp(320px,46vw,560px)}
+/* ---------- fold-out plates (full bleed) ---------- */
+.bleed{margin:clamp(44px,6vw,84px) 0 clamp(24px,3vw,44px)}
+.bleed .bd{position:relative;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);background:var(--paper-2)}
+.bleed .bd img{width:100%;height:clamp(420px,82vh,800px);object-fit:cover;display:block;outline:none}
+.bleed .ptag{position:absolute;z-index:2;top:0;left:0;background:var(--paper);border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);font-family:var(--type);font-weight:700;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--turq-deep);padding:10px 16px}
+.bleed figcaption{display:flex;gap:10px;align-items:baseline;padding-top:12px;font-size:13.5px;line-height:1.5;color:var(--ink-soft);max-width:72ch}
+.bleed figcaption .fn{font-family:var(--type);font-weight:700;font-size:12px;color:var(--turq-deep);white-space:nowrap}
 .develop{position:relative;overflow:hidden}
 .develop .sk{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:url(#lineart);background:#fff;clip-path:inset(0 0 0 0);transition:clip-path 2.4s var(--eo) .4s}
 .develop.done .sk{clip-path:inset(0 0 0 100%)}
@@ -228,7 +232,7 @@ header{position:sticky;top:0;z-index:90;background:var(--paper);border-bottom:1p
 
 /* ---------- closing ---------- */
 .closing{background:var(--ink);color:var(--paper);margin-top:clamp(40px,6vw,80px)}
-.closing .in{padding:clamp(56px,8vw,110px) 0;text-align:center}
+.closing .in{padding:clamp(80px,16vh,170px) 0;text-align:center}
 .closing .sc{color:#A89F8C}
 .closing h2{font-size:clamp(34px,5vw,62px);margin:18px auto 18px;max-width:18ch;color:var(--paper)}
 .closing h2 em{font-style:normal;color:#6FB5AD}
@@ -354,20 +358,19 @@ footer{border-top:1px solid var(--rule);background:var(--paper)}
     </div>
   </section>
 
-  <!-- ============ PLATE ============ -->
-  <section class="plate">
-    <div class="wrap">
-      <figure class="fig rv">
-        <div class="frame">
-          <div class="develop" id="develop">
-            <img src="assets/render-greatroom.jpg" alt="A great room with floor-to-ceiling windows looking over the desert valley at sunset" loading="lazy">
-            <img class="sk" src="assets/render-greatroom.jpg" alt="" aria-hidden="true" loading="lazy">
-          </div>
-        </div>
-        <figcaption><span class="fn">PLATE II</span><span>The view from a great room that hadn't been built yet. It arrives on this page the way it arrived in our office: first the drawing, then the room. The owners stood in this picture eight months before the windows were ordered.</span></figcaption>
-      </figure>
+  <!-- ============ FOLD-OUT PLATE II ============ -->
+  <figure class="bleed rv">
+    <div class="bd">
+      <span class="ptag">Fold-out · Plate II</span>
+      <div class="develop" id="develop">
+        <img src="assets/render-greatroom.jpg" alt="A great room with floor-to-ceiling windows looking over the desert valley at sunset" loading="lazy">
+        <img class="sk" src="assets/render-greatroom.jpg" alt="" aria-hidden="true" loading="lazy">
+      </div>
     </div>
-  </section>
+    <div class="wrap">
+      <figcaption><span class="fn">PLATE II</span><span>The view from a great room that hadn't been built yet. It arrives on this page the way it arrived in our office: first the drawing, then the room. The owners stood in this picture eight months before the windows were ordered.</span></figcaption>
+    </div>
+  </figure>
 
   <div class="wrap"><div class="ast" aria-hidden="true">⁂</div></div>
 
@@ -443,6 +446,17 @@ footer{border-top:1px solid var(--rule);background:var(--paper)}
   </section>
 
   <div class="wrap"><div class="ast" aria-hidden="true">⁂</div></div>
+
+  <!-- ============ FOLD-OUT PLATE IV ============ -->
+  <figure class="bleed rv">
+    <div class="bd">
+      <span class="ptag">Fold-out · Plate IV</span>
+      <img src="assets/render-pool-twilight.jpg" alt="The finished two-storey home at twilight: pool, spiral stair to the rooftop terrace, lights coming on" loading="lazy">
+    </div>
+    <div class="wrap">
+      <figcaption><span class="fn">PLATE IV</span><span>The home from the cover of this book, finished and uninterrupted: no line to drag this time. Twenty-two sheets, one flat fee, and a rooftop where the family eats supper now.</span></figcaption>
+    </div>
+  </figure>
 
   <!-- ============ IV. THE PRICE ============ -->
   <section class="price" id="price">
