@@ -138,6 +138,9 @@ header{position:sticky;top:0;z-index:90;background:var(--paper);border-bottom:1p
 @media(max-width:760px){.rc-grid{grid-template-columns:1fr}}
 .rc{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:clamp(24px,3vw,40px)}
 .rc .no{font-family:var(--type);font-weight:700;font-size:13px;color:var(--turq-deep);display:block;margin-bottom:12px}
+.rc .thumb{border:1px solid var(--rule);background:var(--paper-2);padding:5px;margin-bottom:18px}
+.rc .thumb img{width:100%;height:160px;object-fit:cover}
+.rc .thumb img.sketch{filter:url(#lineart);background:#fff}
 .rc h3{font-size:clamp(22px,2.2vw,28px);margin-bottom:12px}
 .rc p{font-size:16px;color:var(--ink-soft);line-height:1.65;max-width:46ch}
 .rc p b{color:var(--ink);font-weight:600}
@@ -147,6 +150,16 @@ header{position:sticky;top:0;z-index:90;background:var(--paper);border-bottom:1p
 /* ---------- plate spread ---------- */
 .plate{padding:clamp(20px,3vw,40px) 0}
 .plate .fig img{height:clamp(320px,46vw,560px)}
+.develop{position:relative;overflow:hidden}
+.develop .sk{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:url(#lineart);background:#fff;clip-path:inset(0 0 0 0);transition:clip-path 2.4s var(--eo) .4s}
+.develop.done .sk{clip-path:inset(0 0 0 100%)}
+@media(prefers-reduced-motion:reduce){.develop .sk{display:none}}
+
+/* ---------- closing backdrop ---------- */
+.closing{position:relative;overflow:hidden}
+.closing .bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;outline:none}
+.closing .scrim{position:absolute;inset:0;background:rgba(20,15,7,.78)}
+.closing .in{position:relative;z-index:1}
 
 /* ---------- II. how it goes — contents page ---------- */
 .howit{padding:clamp(20px,3vw,40px) 0}
@@ -311,24 +324,28 @@ footer{border-top:1px solid var(--rule);background:var(--paper)}
       <div class="rc-grid rv">
         <div class="rc">
           <span class="no">No. 1</span>
+          <div class="thumb"><img class="sketch" src="assets/render-motorcourt.jpg" alt="An ink line drawing of a home's entry court, the way it looks while we design it" loading="lazy"></div>
           <h3>The design</h3>
           <p>Tell us how your family lives and what the house should do better. We shape the rooms around your answers — and around your lot's rules, <b>which we look up before we draw anything</b>, so there are no surprises at City Hall.</p>
           <span class="trade">In the trade, this is called <b>architectural design</b>.</span>
         </div>
         <div class="rc">
           <span class="no">No. 2</span>
+          <div class="thumb"><img src="assets/model-massing-white.jpg" alt="A white 3-D study model of a large home with a pool terrace, used early in design" loading="lazy"></div>
           <h3>The preview</h3>
           <p>A lifelike picture of your home before it exists — the kitchen at supper time, the casita from the back porch. If a room feels tight, <b>we widen it on paper, where it costs nothing</b>.</p>
           <span class="trade">In the trade: <b>3-D visualization</b>.</span>
         </div>
         <div class="rc">
           <span class="no">No. 3</span>
+          <div class="thumb"><img src="assets/sheet-elevations.jpg" alt="A finished elevation sheet showing two sides of the house with construction notes" loading="lazy"></div>
           <h3>The plans</h3>
           <p>The complete instruction manual for the build: every wall, beam and outlet, measured and drawn to today's building code. This is the set <b>the city reviews and your builder prices</b>.</p>
           <span class="trade">In the trade: <b>construction documents</b>.</span>
         </div>
         <div class="rc">
           <span class="no">No. 4</span>
+          <div class="thumb"><img src="assets/sheet-site-plan.jpg" alt="A site plan sheet showing the house, the yard and the property lines, ready for city review" loading="lazy"></div>
           <h3>The permit</h3>
           <p>We file the plans with your city, answer every question their reviewers raise, and revise until the permit is approved. <b>There is no extra charge for this</b>, however many rounds it takes.</p>
           <span class="trade">In the trade: <b>permit stewardship</b>.</span>
@@ -341,8 +358,13 @@ footer{border-top:1px solid var(--rule);background:var(--paper)}
   <section class="plate">
     <div class="wrap">
       <figure class="fig rv">
-        <div class="frame"><img src="assets/render-greatroom.jpg" alt="A great room with floor-to-ceiling windows looking over the desert valley at sunset" loading="lazy"></div>
-        <figcaption><span class="fn">PLATE II</span><span>The view from a great room that hadn't been built yet. The owners stood in this picture, on a screen at our office, eight months before the windows were ordered.</span></figcaption>
+        <div class="frame">
+          <div class="develop" id="develop">
+            <img src="assets/render-greatroom.jpg" alt="A great room with floor-to-ceiling windows looking over the desert valley at sunset" loading="lazy">
+            <img class="sk" src="assets/render-greatroom.jpg" alt="" aria-hidden="true" loading="lazy">
+          </div>
+        </div>
+        <figcaption><span class="fn">PLATE II</span><span>The view from a great room that hadn't been built yet. It arrives on this page the way it arrived in our office: first the drawing, then the room. The owners stood in this picture eight months before the windows were ordered.</span></figcaption>
       </figure>
     </div>
   </section>
@@ -493,6 +515,8 @@ footer{border-top:1px solid var(--rule);background:var(--paper)}
 
   <!-- ============ CLOSING ============ -->
   <section class="closing" id="write">
+    <img class="bgimg" src="assets/render-night-stars.jpg" alt="" aria-hidden="true" loading="lazy">
+    <div class="scrim" aria-hidden="true"></div>
     <div class="wrap in">
       <span class="sc">From the last page</span>
       <h2>Tell us about the home you have <em>in mind.</em></h2>
@@ -535,6 +559,15 @@ footer{border-top:1px solid var(--rule);background:var(--paper)}
     function setX(v){cmp.style.setProperty('--x',v+'%');}
     range.addEventListener('input',function(){cmp.classList.remove('idle');setX(range.value);});
     cmp.addEventListener('pointerdown',function(){cmp.classList.remove('idle');},{once:true});
+  }
+
+  /* plate II develops from drawing to photograph */
+  var dev=document.getElementById('develop');
+  if(dev){
+    var dio=new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){dev.classList.add('done');dio.unobserve(dev);}});
+    },{threshold:.45});
+    dio.observe(dev);
   }
 
   /* the approval stamp */
